@@ -19,7 +19,7 @@ app.post("/register", async (req, res) => {
   
       // Validate user input
       if (!(email && password && first_name && last_name)) {
-        res.status(400).send("All input is required");
+        res.status(400).send({status: "input error"});
       }
   
       // check if user already exist
@@ -27,7 +27,7 @@ app.post("/register", async (req, res) => {
       const oldUser = await User.findOne({ email });
   
       if (oldUser) {
-        return res.status(409).send("User Already Exist. Please Login");
+        return res.status(409).send({status: "duplicate"});
       }
   
       //Encrypt user password
@@ -53,7 +53,7 @@ app.post("/register", async (req, res) => {
       user.token = token;
   
       // return new user
-      res.status(201).json(user);
+      res.status(201).json({email: user["email"], token: user["token"], status: "success"});
     } catch (err) {
       console.log(err);
     }
@@ -69,7 +69,7 @@ app.post("/register", async (req, res) => {
   
       // Validate user input
       if (!(email && password)) {
-        res.status(400).send("All input is required");
+        res.status(400).send({status: "input error"});
       }
       // Validate if user exist in our database
       const user = await User.findOne({ email });
@@ -88,9 +88,9 @@ app.post("/register", async (req, res) => {
         user.token = token;
   
         // user
-        res.status(200).json(user);
+        res.status(200).json({email: user["email"], token: user["token"], status: "success"});
       }
-      res.status(400).send("Invalid Credentials");
+      res.status(400).send({status: "failure"});
     } catch (err) {
       console.log(err);
     }
